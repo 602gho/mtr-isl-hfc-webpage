@@ -1,12 +1,6 @@
-/* ============================================
-   API Configuration
-   ============================================ */
 const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line=ISL&sta=HFC&lang=TC';
 const currentWeatherUrl = 'https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc';
 
-/* ============================================
-   Train Data Functions
-   ============================================ */
 async function fetchTrainData() {
     try {
         const response = await fetch(apiUrl);
@@ -103,83 +97,14 @@ async function fetchTrainData() {
     }
 }
 
-/* ============================================
-   Weather Data Functions
-   ============================================ */
 function getWeatherIcon(iconCode) {
-    // HKO Weather Icon Codes - based on official HKO documentation
     const iconMap = {
-        '50': '☀️', // Sunny
-        '51': '🌤️', // Sunny Periods
-        '52': '⛅', // Sunny Intervals
-        '53': '🌥️', // Sunny Periods with A Few Showers
-        '54': '🌦️', // Sunny Intervals with Showers
-        '60': '☁️', // Cloudy
-        '61': '☁️', // Overcast
-        '62': '🌧️', // Light Rain
-        '63': '🌧️', // Rain
-        '64': '⛈️', // Heavy Rain
-        '65': '⛈️', // Thunderstorms
-        '70': '☀️', // Fine
-        '71': '🌙', // Fine (Night)
-        '72': '💨', // Windy
-        '73': '🌫️', // Fog
-        '74': '🌫️', // Mist
-        '75': '🌫️', // Haze
-        '76': '☀️', // Hot (use sun icon)
-        '77': '☀️', // Very Hot (use sun icon instead of thermometer)
-        '80': '🌧️', // Light Rain
-        '81': '🌧️', // Rain
-        '82': '⛈️', // Heavy Rain
-        '85': '❄️', // Snow
-        '90': '☀️', // Hot (use sun icon)
-        '91': '☁️', // Cold (use cloud icon)
-        '92': '☀️', // Very Hot (use sun icon)
-        '93': '☁️', // Very Cold (use cloud icon)
+        '50': '☀️', '51': '🌤️', '52': '⛅', '53': '🌥️', '54': '🌦️',
+        '60': '☁️', '61': '☁️', '62': '🌧️', '63': '🌧️', '64': '⛈️', '65': '⛈️',
+        '70': '☀️', '71': '🌙', '72': '💨', '73': '🌫️', '74': '🌫️', '75': '🌫️',
+        '76': '☀️', '77': '☀️', '80': '🌧️', '81': '🌧️', '82': '⛈️', '85': '❄️'
     };
-    const codeStr = String(iconCode);
-    const icon = iconMap[codeStr];
-    
-    // Debug: log the icon code being used
-    if (!icon) {
-        console.log('Unknown weather icon code:', iconCode);
-    }
-    
-    return icon || '🌤️';
-}
-
-function getWeatherDescription(iconCode) {
-    // Map icon codes to weather descriptions in Traditional Chinese
-    const descMap = {
-        '50': '晴天',
-        '51': '間中有陽光',
-        '52': '間中有陽光',
-        '53': '間中有陽光，有幾陣驟雨',
-        '54': '間中有陽光，有驟雨',
-        '60': '多雲',
-        '61': '密雲',
-        '62': '微雨',
-        '63': '有雨',
-        '64': '大雨',
-        '65': '雷暴',
-        '70': '天晴',
-        '71': '天晴',
-        '72': '有風',
-        '73': '有霧',
-        '74': '有薄霧',
-        '75': '有煙霞',
-        '76': '炎熱',
-        '77': '非常炎熱',
-        '80': '微雨',
-        '81': '有雨',
-        '82': '大雨',
-        '85': '有雪',
-        '90': '炎熱',
-        '91': '寒冷',
-        '92': '非常炎熱',
-        '93': '非常寒冷',
-    };
-    return descMap[String(iconCode)] || '';
+    return iconMap[String(iconCode)] || '🌤️';
 }
 
 async function fetchWeatherData() {
@@ -198,75 +123,17 @@ async function fetchWeatherData() {
             const humidity = currentData.humidity ? currentData.humidity.data[0] : null;
 
             let weatherIcon = '🌤️';
-            let weatherDesc = '';
-            let iconCode = null;
-            
-            // Debug: log the API response to see what we're getting
-            console.log('Weather API Response:', currentData);
-            
             if (currentData.icon && currentData.icon.length > 0) {
-                iconCode = currentData.icon[0];
-                console.log('Icon code from API:', iconCode);
-                weatherIcon = getWeatherIcon(iconCode);
-            } else if (currentData.forecastIcon) {
-                iconCode = currentData.forecastIcon;
-                console.log('Forecast icon code from API:', iconCode);
-                weatherIcon = getWeatherIcon(iconCode);
-            } else {
-                console.log('No icon data found in API response');
+                weatherIcon = getWeatherIcon(currentData.icon[0]);
             }
 
-            // Try multiple fields for weather description
-            if (currentData.weather && currentData.weather.length > 0) {
-                weatherDesc = currentData.weather[0];
-            } else if (currentData.weatherDesc) {
-                weatherDesc = currentData.weatherDesc;
-            } else if (currentData.weatherInfo) {
-                weatherDesc = currentData.weatherInfo;
-            } else if (currentData.forecastWeather) {
-                weatherDesc = currentData.forecastWeather;
-            } else if (iconCode !== null) {
-                // Use icon code to get description as fallback, but validate against temperature
-                const iconDesc = getWeatherDescription(iconCode);
-                const tempValue = parseInt(temp.value);
-                
-                // Only use icon description if it makes sense with the temperature
-                // Don't show "非常炎熱" or "炎熱" if temperature is below 28°C
-                // Don't show "非常寒冷" or "寒冷" if temperature is above 15°C
-                if (iconDesc) {
-                    if ((iconDesc.includes('炎熱') || iconDesc.includes('熱')) && tempValue < 28) {
-                        // Temperature doesn't match hot description, skip it
-                        weatherDesc = '';
-                    } else if ((iconDesc.includes('寒冷') || iconDesc.includes('冷')) && tempValue > 15) {
-                        // Temperature doesn't match cold description, skip it
-                        weatherDesc = '';
-                    } else {
-                        weatherDesc = iconDesc;
-                    }
-                }
-            }
-
-            // Determine what to show in the third line
-            let rainfallInfo = '';
+            let rainfallInfo = '無降雨';
             if (currentData.rainfall && currentData.rainfall.data && currentData.rainfall.data.length > 0) {
                 const rainfallData = currentData.rainfall.data;
-                let maxRainfall = 0;
-                rainfallData.forEach(item => {
-                    const rainValue = item.max || item.value || 0;
-                    if (rainValue > maxRainfall) {
-                        maxRainfall = rainValue;
-                    }
-                });
-
+                const maxRainfall = Math.max(...rainfallData.map(item => item.max || item.value || 0));
                 if (maxRainfall > 0) {
                     rainfallInfo = `降雨: ${maxRainfall} 毫米`;
-                } else {
-                    // No rain, show weather description
-                    rainfallInfo = weatherDesc || '無降雨';
                 }
-            } else {
-                // No rainfall data, show weather description
-                rainfallInfo = weatherDesc || '無降雨';
             }
 
             const currentCard = document.createElement('div');
@@ -293,9 +160,6 @@ async function fetchWeatherData() {
     }
 }
 
-/* ============================================
-   UI Update Functions
-   ============================================ */
 function updateDateTime() {
     const now = new Date();
     const year = now.getFullYear();
@@ -311,31 +175,23 @@ function updateDateTime() {
 
 function updateRefreshCountdown() {
     const countdownDiv = document.getElementById('refresh-countdown');
-    if (!countdownDiv) return;
+    if (!countdownDiv || !window.lastTrainUpdate) return;
 
     const now = Date.now();
     const trainRefreshInterval = 30000;
-    const weatherRefreshInterval = 300000;
+    const timeSinceTrainUpdate = now - window.lastTrainUpdate;
+    const timeUntilTrainRefresh = trainRefreshInterval - timeSinceTrainUpdate;
 
-    if (window.lastTrainUpdate) {
-        const timeSinceTrainUpdate = now - window.lastTrainUpdate;
-        const timeUntilTrainRefresh = trainRefreshInterval - timeSinceTrainUpdate;
-
-        if (timeUntilTrainRefresh > 0) {
-            const seconds = Math.ceil(timeUntilTrainRefresh / 1000);
-            countdownDiv.textContent = `下次更新: ${seconds} 秒`;
-        } else {
-            countdownDiv.textContent = '更新中...';
-        }
+    if (timeUntilTrainRefresh > 0) {
+        const seconds = Math.ceil(timeUntilTrainRefresh / 1000);
+        countdownDiv.textContent = `下次更新: ${seconds} 秒`;
+    } else {
+        countdownDiv.textContent = '更新中...';
     }
 }
 
-/* ============================================
-   Initialization
-   ============================================ */
 updateDateTime();
 setInterval(updateDateTime, 1000);
-
 setInterval(updateRefreshCountdown, 1000);
 
 fetchTrainData();

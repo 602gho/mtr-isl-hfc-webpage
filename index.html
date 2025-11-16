@@ -6,65 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>602 dashboard</title>
     <style>
-        /* Base Styles */
         :root {
-            /* Color palette */
-            --bg: #000000;
-            --text: #ffffff;
-            --panel-bg: #111111; /* outer panels like train/weather */
-            --card-bg: #1a1a1a;  /* inner cards / direction cards */
-            --border: #333333;
-            --muted: #888888;
-
-            /* Typography */
-            --base-min: 16px;
-            --base-max: 22px;
-
-            /* Spacing */
-            --spacing-xs: 0.25rem;
-            --spacing-sm: 0.5rem;
-            --spacing-md: 1rem;
-            --spacing-lg: 1.5rem;
-            --spacing-xl: 2rem;
-
-            /* Border */
-            --border-width: 1px;
-            --border-width-thick: 2px;
+            --bg: #000;
+            --text: #fff;
+            --border: #333;
+            --muted: #888;
         }
 
         body {
             margin: 0;
-            padding: var(--spacing-sm);
+            padding: 0.5rem;
             background-color: var(--bg);
             color: var(--text);
             font-family: Arial, sans-serif;
-            font-size: clamp(var(--base-min), 2.2vw, var(--base-max));
+            font-size: clamp(16px, 2.2vw, 22px);
             line-height: 1.45;
         }
 
-        /* Typography */
         h1 {
-            margin: var(--spacing-sm) 0;
-            color: var(--text);
+            margin: 0.5rem 0;
             font-size: clamp(26px, 6.5vw, 64px);
             text-align: center;
             line-height: 1.1;
         }
 
-        /* Layout */
         .container {
             display: flex;
-            justify-content: space-between;
             gap: clamp(5px, 2vw, 15px);
-            max-width: none;
             margin: 0;
         }
 
         .direction {
             flex: 1;
             padding: clamp(10px, 2vw, 20px);
-            background-color: var(--card-bg);
-            border: var(--border-width) solid var(--border);
+            background-color: #1a1a1a;
+            border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             gap: clamp(8px, 1vw, 12px);
@@ -72,13 +48,11 @@
 
         .direction h2 {
             margin: 0;
-            color: var(--text);
             font-size: clamp(20px, 5vw, 48px);
             text-align: center;
-            padding: var(--spacing-sm) 0;
+            padding: 0.5rem 0;
         }
 
-        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -86,8 +60,7 @@
 
         th, td {
             padding: clamp(8px, 1.6vw, 14px);
-            border: var(--border-width) solid var(--border);
-            color: var(--text);
+            border: 1px solid var(--border);
             font-size: clamp(14px, 2.2vw, 20px);
             text-align: center;
             word-break: break-word;
@@ -99,60 +72,53 @@
         }
 
         tr:nth-child(even) {
-            background-color: #222222;
+            background-color: #222;
         }
 
-        /* Date/Time Display */
         #current-datetime {
-            margin: var(--spacing-sm) 0;
-            color: var(--text);
+            margin: 0.5rem 0;
             font-size: clamp(13px, 1.8vw, 18px);
             font-weight: 600;
             text-align: center;
         }
 
-        /* Error Messages */
         .error {
-            margin: var(--spacing-sm) 0;
+            margin: 0.5rem 0;
             color: #ff4d4d;
             font-size: clamp(14px, 2.5vw, 20px);
             text-align: center;
             font-weight: 700;
         }
 
-        /* Bottom Info */
         .bottom-info {
-            margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+            margin: 1rem 0 0.5rem 0;
             color: var(--muted);
             font-size: clamp(12px, 1.5vw, 14px);
             text-align: center;
         }
 
         #refresh-countdown {
-            margin: var(--spacing-xs) 0 var(--spacing-md) 0;
+            margin: 0 0 1rem 0;
             color: var(--muted);
             font-size: clamp(12px, 1.5vw, 14px);
             text-align: center;
         }
 
-        /* Weather Section */
         .weather-section {
-            margin: var(--spacing-md) 0;
+            margin: 1rem 0;
             padding: clamp(10px, 3vw, 20px);
-            background-color: var(--panel-bg);
-            border: var(--border-width) solid var(--border);
+            background-color: #111;
+            border: 1px solid var(--border);
         }
 
         .weather-section h2 {
-            margin: 0 0 var(--spacing-md) 0;
-            color: #ffffff;
+            margin: 0 0 1rem 0;
             font-size: clamp(24px, 6vw, 56px);
             text-align: center;
         }
 
         .weather-container {
             display: flex;
-            flex-wrap: wrap;
             gap: clamp(10px, 2vw, 20px);
             justify-content: center;
         }
@@ -160,22 +126,19 @@
         .weather-card {
             flex: 1;
             min-width: clamp(150px, 40vw, 300px);
-            max-width: 100%;
             padding: clamp(10px, 2vw, 20px);
-            background-color: var(--card-bg);
-            border: var(--border-width) solid var(--border);
+            background-color: #1a1a1a;
+            border: 1px solid var(--border);
         }
 
         .weather-card h3 {
-            margin: 0 0 var(--spacing-sm) 0;
-            color: #ffffff;
+            margin: 0 0 0.5rem 0;
             font-size: clamp(14px, 2.5vw, 22px);
             text-align: center;
         }
 
         .weather-card p {
-            margin: var(--spacing-sm) 0;
-            color: var(--text);
+            margin: 0.5rem 0;
             font-size: clamp(14px, 2vw, 18px);
         }
 
@@ -193,131 +156,41 @@
         .weather-icon-display {
             font-size: clamp(48px, 12vw, 80px);
             line-height: 1;
-            text-align: center;
             flex-shrink: 0;
         }
 
         .current-weather {
-            background-color: #1a1a1a;
-            border: var(--border-width-thick) solid #444444;
+            border: 2px solid #444;
         }
 
-        /* Train Section - match weather section visuals */
         .train-section {
-            margin: var(--spacing-md) 0;
+            margin: 1rem 0;
             padding: clamp(10px, 3vw, 20px);
-            background-color: #111111;
-            border: var(--border-width) solid #333333;
+            background-color: #111;
+            border: 1px solid var(--border);
         }
 
         .train-section h1 {
-            margin: 0 0 var(--spacing-md) 0;
-            color: #ffffff;
+            margin: 0 0 1rem 0;
             font-size: clamp(24px, 6vw, 56px);
             text-align: center;
         }
 
         .train-section h2 {
             margin: 0;
-            color: #ffffff;
             font-size: clamp(18px, 4vw, 40px);
             text-align: center;
-            padding: var(--spacing-xs) 0;
+            padding: 0.25rem 0;
         }
 
-        /* Media Queries - Tablet */
-        @media (max-width: 1024px) {
-            body {
-                padding: var(--spacing-sm);
-            }
-
-            .container {
-                gap: clamp(5px, 1.5vw, 12px);
-            }
-
-            th, td {
-                padding: clamp(6px, 1vw, 10px);
-            }
-        }
-
-        /* Media Queries - Mobile */
         @media (max-width: 768px) {
-            body {
-                padding: var(--spacing-sm);
-            }
-
             .container {
                 flex-direction: column;
-                gap: clamp(5px, 1vw, 10px);
             }
-
-            .direction h2 {
-                padding: var(--spacing-md);
-                margin-bottom: var(--spacing-sm);
-            }
-
-            th, td {
-                padding: clamp(8px, 1.5vw, 12px);
-            }
-
-
 
             .weather-info-container {
                 flex-direction: column;
                 align-items: center;
-            }
-
-            .weather-card p {
-                margin: var(--spacing-xs) 0;
-            }
-        }
-
-        /* Media Queries - Small Mobile */
-        @media (max-width: 480px) {
-            body {
-                padding: var(--spacing-xs);
-            }
-
-            #current-datetime {
-                margin: var(--spacing-xs) 0;
-            }
-
-            .direction {
-                padding: clamp(8px, 1.5vw, 12px);
-                margin-bottom: var(--spacing-sm);
-            }
-
-            th, td {
-                padding: clamp(5px, 1vw, 8px);
-            }
-
-            .weather-section {
-                padding: clamp(8px, 2vw, 12px);
-                margin: var(--spacing-sm) 0;
-            }
-
-            .weather-card {
-                padding: clamp(8px, 1.5vw, 12px);
-            }
-        }
-
-        /* Large Screen (TV/Desktop) */
-        @media (min-width: 1920px) {
-            body {
-                padding: var(--spacing-lg);
-            }
-
-            .container {
-                gap: 20px;
-            }
-
-            th, td {
-                padding: 12px;
-            }
-
-            .weather-section {
-                padding: 30px;
-                margin: var(--spacing-xl) 0;
             }
         }
     </style>
