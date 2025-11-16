@@ -6,19 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Next Trains at Heng Fa Chuen (Island Line)</title>
     <style>
+        /* Base Styles */
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
+            padding: 0;
             background-color: #000000;
             color: #ffffff;
+            font-family: Arial, sans-serif;
             font-size: 1.5em;
         }
+
+        /* Typography */
         h1 {
-            text-align: center;
-            color: #ffffff;
             margin: 10px 0;
+            color: #ffffff;
             font-size: 2em;
+            text-align: center;
         }
+
+        /* Layout */
         .container {
             display: flex;
             justify-content: space-between;
@@ -26,66 +32,153 @@
             max-width: none;
             margin: 0;
         }
+
         .direction {
             flex: 1;
-            background-color: #111111;
             padding: 0;
+            background-color: #111111;
         }
+
         .direction h2 {
             margin: 0;
             color: #ffffff;
             font-size: 1.8em;
             text-align: center;
         }
+
+        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
         }
+
         th, td {
-            border: 1px solid #333333;
             padding: 0;
-            text-align: center;
+            border: 1px solid #333333;
+            color: #ffffff;
             font-size: 1.4em;
+            text-align: center;
         }
+
         th {
             background-color: #333333;
-            color: #ffffff;
         }
+
         tr:nth-child(even) {
             background-color: #222222;
         }
+
+        /* Date/Time Display */
+        #current-datetime {
+            margin: 10px 0;
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Error Messages */
         .error {
+            margin: 10px 0;
             color: #ff0000;
-            text-align: center;
-            margin: 10px 0;
             font-size: 1.6em;
-        }
-        #update-time {
             text-align: center;
-            color: #888888;
-            margin: 10px 0;
-            font-size: 1em;
         }
+
+        /* Bottom Info */
+        .bottom-info {
+            margin: 20px 0 10px 0;
+            color: #888888;
+            font-size: 1em;
+            text-align: center;
+        }
+
+        #refresh-countdown {
+            margin: 5px 0 20px 0;
+            color: #888888;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        /* Weather Section */
+        .weather-section {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #111111;
+            border: 1px solid #333333;
+        }
+
+        .weather-section h2 {
+            margin: 0 0 15px 0;
+            color: #ffffff;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .weather-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .weather-card {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            padding: 15px;
+            background-color: #222222;
+            border: 1px solid #333333;
+        }
+
+        .weather-card h3 {
+            margin: 0 0 10px 0;
+            color: #ffffff;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .weather-card p {
+            margin: 8px 0;
+            color: #ffffff;
+            font-size: 1.1em;
+        }
+
+        .current-weather {
+            background-color: #1a1a1a;
+            border: 2px solid #444444;
+        }
+
+        /* Media Queries */
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
             body {
                 font-size: 1.6em;
             }
+
             h1 {
                 font-size: 2.2em;
             }
+
+            .container {
+                flex-direction: column;
+            }
+
             .direction h2 {
                 font-size: 2em;
             }
+
             th, td {
                 font-size: 1.5em;
+            }
+
+            .weather-card {
+                max-width: 100%;
             }
         }
     </style>
 </head>
 <body>
+    <div id="current-datetime"></div>
     <h1>下一班列車資料 - 杏花邨站 (港島線)</h1>
     <div class="container">
         <div id="up-direction" class="direction">
@@ -116,7 +209,15 @@
         </div>
     </div>
     <div id="error-message" class="error"></div>
-    <p id="update-time"></p>
+
+    <div class="weather-section">
+        <h2>天氣資訊</h2>
+        <div id="weather-info" class="weather-container"></div>
+        <div id="weather-error" class="error"></div>
+    </div>
+
+    <p id="update-time" class="bottom-info"></p>
+    <div id="refresh-countdown"></div>
 
     <script src="script.js"></script>
 </body>

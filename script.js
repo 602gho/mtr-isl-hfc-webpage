@@ -1,5 +1,12 @@
+/* ============================================
+   API Configuration
+   ============================================ */
 const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line=ISL&sta=HFC&lang=TC';
+const currentWeatherUrl = 'https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc';
 
+/* ============================================
+   Train Data Functions
+   ============================================ */
 async function fetchTrainData() {
     try {
         const response = await fetch(apiUrl);
@@ -27,12 +34,17 @@ async function fetchTrainData() {
             return;
         }
 
-        // Update time
         const currentTimeStr = json.curr_time || json.sys_time;
         const currentTime = new Date(currentTimeStr);
         updateP.textContent = `最後更新: ${currentTimeStr}`;
+        window.lastTrainUpdate = Date.now();
 
-        // Function to calculate minutes
+        function formatTime(timeStr) {
+            if (!timeStr) return '';
+            const timeMatch = timeStr.match(/\d{2}:\d{2}:\d{2}/);
+            return timeMatch ? timeMatch[0] : timeStr;
+        }
+
         function calculateMins(arrivalTimeStr) {
             try {
                 const arrivalTime = new Date(arrivalTimeStr);
@@ -50,14 +62,14 @@ async function fetchTrainData() {
             }
         }
 
-        // UP direction
         if (data.UP && data.UP.length > 0) {
             data.UP.forEach(train => {
                 const mins = calculateMins(train.time);
+                const formattedTime = formatTime(train.time);
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${train.seq}</td>
-                    <td>${train.time}</td>
+                    <td>${formattedTime}</td>
                     <td>${mins}</td>
                 `;
                 upTbody.appendChild(row);
@@ -68,14 +80,14 @@ async function fetchTrainData() {
             upTbody.appendChild(row);
         }
 
-        // DOWN direction
         if (data.DOWN && data.DOWN.length > 0) {
             data.DOWN.forEach(train => {
                 const mins = calculateMins(train.time);
+                const formattedTime = formatTime(train.time);
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${train.seq}</td>
-                    <td>${train.time}</td>
+                    <td>${formattedTime}</td>
                     <td>${mins}</td>
                 `;
                 downTbody.appendChild(row);
@@ -91,9 +103,106 @@ async function fetchTrainData() {
     }
 }
 
-// Fetch data on load
-fetchTrainData();
+/* ============================================
+   Weather Data Functions
+   ============================================ */
+async function fetchWeatherData() {
+    try {
+        const weatherDiv = document.getElementById('weather-info');
+        const weatherError = document.getElementById('weather-error');
 
-// Refresh every 30 seconds
+        weatherDiv.innerHTML = '';
+        weatherError.innerHTML = '';
+
+        const currentResponse = await fetch(currentWeatherUrl);
+        const currentData = await currentResponse.json();
+
+        if (currentData && currentData.temperature) {
+            const temp = currentData.temperature.data[0];
+            const humidity = currentData.humidity ? currentData.humidity.data[0] : null;
+
+            let rainfallInfo = '無降雨';
+            if (currentData.rainfall && currentData.rainfall.data && currentData.rainfall.data.length > 0) {
+                const rainfallData = currentData.rainfall.data;
+                let maxRainfall = 0;
+                rainfallData.forEach(item => {
+                    const rainValue = item.max || item.value || 0;
+                    if (rainValue > maxRainfall) {
+                        maxRainfall = rainValue;
+                    }
+                });
+
+                if (maxRainfall > 0) {
+                    rainfallInfo = `降雨: ${maxRainfall} 毫米`;
+                }
+            }
+
+            const currentCard = document.createElement('div');
+            currentCard.className = 'weather-card current-weather';
+            currentCard.innerHTML = `
+                <h3>目前天氣</h3>
+                <p><strong>溫度:</strong> ${temp.value}°C</p>
+                ${humidity ? `<p><strong>濕度:</strong> ${humidity.value}%</p>` : ''}
+                <p><strong>${rainfallInfo}</strong></p>
+            `;
+            weatherDiv.appendChild(currentCard);
+        } else {
+            weatherError.textContent = '無法獲取天氣資料。';
+        }
+
+    } catch (error) {
+        document.getElementById('weather-error').textContent = '發生錯誤: ' + error.message;
+    }
+}
+
+/* ============================================
+   UI Update Functions
+   ============================================ */
+function updateDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const second = String(now.getSeconds()).padStart(2, '0');
+
+    const dateTimeStr = `${year}年${month}月${day}日 ${hour}時${minute}分${second}秒`;
+    document.getElementById('current-datetime').textContent = dateTimeStr;
+}
+
+function updateRefreshCountdown() {
+    const countdownDiv = document.getElementById('refresh-countdown');
+    if (!countdownDiv) return;
+
+    const now = Date.now();
+    const trainRefreshInterval = 30000;
+    const weatherRefreshInterval = 300000;
+
+    if (window.lastTrainUpdate) {
+        const timeSinceTrainUpdate = now - window.lastTrainUpdate;
+        const timeUntilTrainRefresh = trainRefreshInterval - timeSinceTrainUpdate;
+
+        if (timeUntilTrainRefresh > 0) {
+            const seconds = Math.ceil(timeUntilTrainRefresh / 1000);
+            countdownDiv.textContent = `下次更新: ${seconds} 秒`;
+        } else {
+            countdownDiv.textContent = '更新中...';
+        }
+    }
+}
+
+/* ============================================
+   Initialization
+   ============================================ */
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+setInterval(updateRefreshCountdown, 1000);
+
+fetchTrainData();
+fetchWeatherData();
+
 setInterval(fetchTrainData, 30000);
+setInterval(fetchWeatherData, 300000);
 
