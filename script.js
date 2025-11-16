@@ -1,4 +1,5 @@
 const apiUrl = 'https://rt.data.gov.hk/v1/transport/mtr/getSchedule.php?line=ISL&sta=HFC&lang=TC';
+const forecastWeatherUrl = 'https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=fnd&lang=tc';
 const currentWeatherUrl = 'https://data.weather.gov.hk/weatherAPI/opendata/weather.php?dataType=rhrread&lang=tc';
 
 async function fetchTrainData() {
@@ -102,58 +103,112 @@ function getWeatherIcon(iconCode) {
         '50': '☀️', '51': '🌤️', '52': '⛅', '53': '🌥️', '54': '🌦️',
         '60': '☁️', '61': '☁️', '62': '🌧️', '63': '🌧️', '64': '⛈️', '65': '⛈️',
         '70': '☀️', '71': '🌙', '72': '💨', '73': '🌫️', '74': '🌫️', '75': '🌫️',
-        '76': '☀️', '77': '☀️', '80': '🌧️', '81': '🌧️', '82': '⛈️', '85': '❄️'
+        '76': '☀️', '77': '☀️', '80': '🌧️', '81': '🌧️', '82': '⛈️', '85': '❄️',
+        '90': '⛈️', '91': '⛈️', '92': '🌧️', '93': '🌧️', '94': '⛈️', '95': '⛈️', '96': '⛈️'
     };
     return iconMap[String(iconCode)] || '🌤️';
 }
 
+function formatDate(dateStr) {
+    if (!dateStr || dateStr.length !== 8) return '';
+    const year = dateStr.substring(0, 4);
+    const month = dateStr.substring(4, 6);
+    const day = dateStr.substring(6, 8);
+    return `${month}/${day}`;
+}
+
 async function fetchWeatherData() {
     try {
-        const weatherDiv = document.getElementById('weather-info');
+        const currentDiv = document.getElementById('current-weather');
+        const generalDiv = document.getElementById('general-situation');
+        const forecastDiv = document.getElementById('weather-info');
         const weatherError = document.getElementById('weather-error');
 
-        weatherDiv.innerHTML = '';
+        const tbody = document.getElementById('current-weather-tbody');
+        if (tbody) tbody.innerHTML = '';
+        generalDiv.innerHTML = '';
+        forecastDiv.innerHTML = '';
         weatherError.innerHTML = '';
 
+        // Fetch current weather
         const currentResponse = await fetch(currentWeatherUrl);
         const currentData = await currentResponse.json();
 
-        if (currentData && currentData.temperature) {
-            const temp = currentData.temperature.data[0];
-            const humidity = currentData.humidity ? currentData.humidity.data[0] : null;
+        if (currentData && currentData.temperature && currentData.temperature.data) {
+            const tempData = currentData.temperature.data[0];
+            const humidityData = currentData.humidity ? currentData.humidity.data[0] : null;
+            const rainfallMax = currentData.rainfall && currentData.rainfall.data 
+                ? Math.max(...currentData.rainfall.data.map(item => item.max || 0))
+                : 0;
+            
+            const tbody = document.getElementById('current-weather-tbody');
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${tempData.value}°C</td>
+                <td>${humidityData ? humidityData.value + '%' : '-'}</td>
+                <td>${rainfallMax}mm</td>
+            `;
+            tbody.appendChild(row);
+        }
 
-            let weatherIcon = '🌤️';
-            if (currentData.icon && currentData.icon.length > 0) {
-                weatherIcon = getWeatherIcon(currentData.icon[0]);
-            }
+        // Fetch forecast data
+        const forecastResponse = await fetch(forecastWeatherUrl);
+        const forecastData = await forecastResponse.json();
 
-            let rainfallInfo = '無降雨';
-            if (currentData.rainfall && currentData.rainfall.data && currentData.rainfall.data.length > 0) {
-                const rainfallData = currentData.rainfall.data;
-                const maxRainfall = Math.max(...rainfallData.map(item => item.max || item.value || 0));
-                if (maxRainfall > 0) {
-                    rainfallInfo = `降雨: ${maxRainfall} 毫米`;
-                }
-            }
+        if (!forecastData || !forecastData.weatherForecast) {
+            weatherError.textContent = '無法獲取天氣資料。';
+            return;
+        }
 
-            const currentCard = document.createElement('div');
-            currentCard.className = 'weather-card current-weather';
-            currentCard.innerHTML = `
-                <div class="weather-info-container">
-                    <div class="weather-info-text">
-                        <p><strong>溫度:</strong> ${temp.value}°C</p>
-                        ${humidity ? `<p><strong>濕度:</strong> ${humidity.value}%</p>` : ''}
-                        <p><strong>${rainfallInfo}</strong></p>
+        // Display general situation
+        if (forecastData.generalSituation) {
+            const generalCard = document.createElement('p');
+            generalCard.textContent = forecastData.generalSituation;
+            generalDiv.appendChild(generalCard);
+        }
+
+        // Display forecast cards (first 4 days)
+        const forecasts = forecastData.weatherForecast.slice(0, 4);
+        
+        forecasts.forEach(forecast => {
+            const card = document.createElement('div');
+            card.className = 'forecast-card';
+            
+            const icon = getWeatherIcon(forecast.ForecastIcon);
+            const date = formatDate(forecast.forecastDate);
+            const maxTemp = forecast.forecastMaxtemp.value;
+            const minTemp = forecast.forecastMintemp.value;
+            const maxRh = forecast.forecastMaxrh.value;
+            const minRh = forecast.forecastMinrh.value;
+            const psr = forecast.PSR || '-';
+            
+            card.innerHTML = `
+                <div>
+                    <div class="forecast-date">${date}</div>
+                    <div class="forecast-day">${forecast.week}</div>
+                    <div class="forecast-icon">${icon}</div>
+                    <div class="forecast-temp">
+                        <span class="temp-max">${maxTemp}°C</span>
+                        <span style="margin: 0 0.3rem;">/</span>
+                        <span class="temp-min">${minTemp}°C</span>
                     </div>
-                    <div class="weather-icon-display">
-                        ${weatherIcon}
+                    <div class="forecast-metrics">
+                        <div class="metric-item">
+                            <div class="metric-label">濕度</div>
+                            <div class="metric-value">${maxRh}%</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">紫外線</div>
+                            <div class="metric-value">${psr}</div>
+                        </div>
                     </div>
+                    <div class="forecast-weather-desc">${forecast.forecastWeather}</div>
+                    <div class="forecast-wind">${forecast.forecastWind}</div>
                 </div>
             `;
-            weatherDiv.appendChild(currentCard);
-        } else {
-            weatherError.textContent = '無法獲取天氣資料。';
-        }
+            
+            forecastDiv.appendChild(card);
+        });
 
     } catch (error) {
         document.getElementById('weather-error').textContent = '發生錯誤: ' + error.message;
@@ -198,5 +253,5 @@ fetchTrainData();
 fetchWeatherData();
 
 setInterval(fetchTrainData, 30000);
-setInterval(fetchWeatherData, 300000);
+setInterval(fetchWeatherData, 600000); // Update every 10 minutes
 

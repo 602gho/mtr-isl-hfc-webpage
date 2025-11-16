@@ -11,6 +11,8 @@
             --text: #fff;
             --border: #333;
             --muted: #888;
+            --card-bg: #1a1a1a;
+            --section-bg: #111;
         }
 
         body {
@@ -30,17 +32,32 @@
             line-height: 1.1;
         }
 
+        h2 {
+            margin: 0 0 1rem 0;
+            font-size: clamp(24px, 6vw, 56px);
+            text-align: center;
+        }
+
         .container {
             display: flex;
             gap: clamp(5px, 2vw, 15px);
             margin: 0;
         }
 
+        .section {
+            margin: 1rem 0;
+            padding: clamp(10px, 3vw, 20px);
+            background-color: var(--section-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
         .direction {
             flex: 1;
             padding: clamp(10px, 2vw, 20px);
-            background-color: #1a1a1a;
+            background-color: var(--card-bg);
             border: 1px solid var(--border);
+            border-radius: 4px;
             display: flex;
             flex-direction: column;
             gap: clamp(8px, 1vw, 12px);
@@ -107,8 +124,9 @@
         .weather-section {
             margin: 1rem 0;
             padding: clamp(10px, 3vw, 20px);
-            background-color: #111;
+            background-color: var(--section-bg);
             border: 1px solid var(--border);
+            border-radius: 4px;
         }
 
         .weather-section h2 {
@@ -117,57 +135,164 @@
             text-align: center;
         }
 
-        .weather-container {
-            display: flex;
-            gap: clamp(10px, 2vw, 20px);
-            justify-content: center;
-        }
-
-        .weather-card {
-            flex: 1;
-            min-width: clamp(150px, 40vw, 300px);
+        .weather-general-situation {
+            margin: 0 0 1.5rem 0;
             padding: clamp(10px, 2vw, 20px);
-            background-color: #1a1a1a;
+            background-color: var(--card-bg);
             border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: clamp(13px, 1.8vw, 16px);
+            line-height: 1.6;
+            color: #ccc;
         }
 
-        .weather-card h3 {
+        .weather-general-situation p {
+            margin: 0;
+        }
+
+        .current-weather-section {
+            flex: 1;
+            padding: clamp(10px, 2vw, 20px);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 1vw, 12px);
+            margin: 1rem 0;
+        }
+
+        .current-weather-section h2 {
+            margin: 0;
+            font-size: clamp(18px, 4vw, 40px);
+            text-align: center;
+            padding: 0.25rem 0;
+        }
+
+        .current-weather-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .current-weather-table th,
+        .current-weather-table td {
+            padding: clamp(8px, 1.6vw, 14px);
+            border: 1px solid var(--border);
+            font-size: clamp(14px, 2.2vw, 20px);
+            text-align: center;
+            word-break: break-word;
+        }
+
+        .current-weather-table th {
+            background-color: var(--border);
+            font-weight: bold;
+        }
+
+        .current-weather-table tr:nth-child(even) {
+            background-color: #222;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 25vw, 200px), 1fr));
+            gap: clamp(8px, 1.5vw, 12px);
+            margin: 1rem 0;
+        }
+
+        .forecast-card {
+            padding: clamp(10px, 2vw, 15px);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .forecast-card:hover {
+            background-color: #222;
+            border-color: #555;
+            transform: translateY(-2px);
+        }
+
+        .forecast-date {
+            font-size: clamp(12px, 1.6vw, 14px);
+            color: var(--muted);
             margin: 0 0 0.5rem 0;
-            font-size: clamp(14px, 2.5vw, 22px);
+        }
+
+        .forecast-day {
+            font-size: clamp(13px, 1.8vw, 16px);
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            color: var(--text);
+        }
+
+        .forecast-icon {
+            font-size: clamp(32px, 8vw, 48px);
+            line-height: 1;
+            margin: 0.5rem 0;
+        }
+
+        .forecast-weather-desc {
+            font-size: clamp(11px, 1.5vw, 13px);
+            color: #aaa;
+            margin: 0.5rem 0;
+            line-height: 1.4;
+        }
+
+        .forecast-temp {
+            margin: 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .temp-max {
+            color: #ff9944;
+        }
+
+        .temp-min {
+            color: #6699ff;
+        }
+
+        .forecast-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin: 0.5rem 0;
+            font-size: clamp(10px, 1.4vw, 12px);
+            gap: 0.3rem;
+        }
+
+        .metric-item {
             text-align: center;
         }
 
-        .weather-card p {
+        .metric-label {
+            color: var(--muted);
+            font-size: clamp(9px, 1.2vw, 11px);
+        }
+
+        .metric-value {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .forecast-wind {
+            font-size: clamp(11px, 1.5vw, 13px);
+            color: #88ddff;
             margin: 0.5rem 0;
-            font-size: clamp(14px, 2vw, 18px);
-        }
-
-        .weather-info-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: clamp(10px, 2vw, 20px);
-        }
-
-        .weather-info-text {
-            flex: 1;
-        }
-
-        .weather-icon-display {
-            font-size: clamp(48px, 12vw, 80px);
-            line-height: 1;
-            flex-shrink: 0;
-        }
-
-        .current-weather {
-            border: 2px solid #444;
+            padding: 0.5rem;
+            background-color: rgba(136, 221, 255, 0.1);
+            border-radius: 3px;
         }
 
         .train-section {
             margin: 1rem 0;
             padding: clamp(10px, 3vw, 20px);
-            background-color: #111;
+            background-color: var(--section-bg);
             border: 1px solid var(--border);
+            border-radius: 4px;
         }
 
         .train-section h1 {
@@ -186,11 +311,6 @@
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
-            }
-
-            .weather-info-container {
-                flex-direction: column;
-                align-items: center;
             }
         }
     </style>
@@ -232,7 +352,21 @@
 
     <div class="weather-section">
         <h2>天氣資訊</h2>
-        <div id="weather-info" class="weather-container"></div>
+        <div id="current-weather" class="current-weather-section">
+            <h2>現在天氣</h2>
+            <table class="current-weather-table">
+                <thead>
+                    <tr>
+                        <th>溫度</th>
+                        <th>濕度</th>
+                        <th>降雨</th>
+                    </tr>
+                </thead>
+                <tbody id="current-weather-tbody"></tbody>
+            </table>
+        </div>
+        <div id="general-situation" class="weather-general-situation"></div>
+        <div id="weather-info" class="forecast-grid"></div>
         <div id="weather-error" class="error"></div>
     </div>
 
