@@ -7,43 +7,64 @@
     <title>602 dashboard</title>
     <style>
         /* Base Styles */
+        :root {
+            /* Color palette */
+            --bg: #000000;
+            --text: #ffffff;
+            --panel-bg: #111111; /* outer panels like train/weather */
+            --card-bg: #1a1a1a;  /* inner cards / direction cards */
+            --border: #333333;
+            --muted: #888888;
+
+            /* Typography */
+            --base-min: 16px;
+            --base-max: 22px;
+        }
+
         body {
             margin: 0;
-            padding: 0;
-            background-color: #000000;
-            color: #ffffff;
+            padding: 0.5rem;
+            background-color: var(--bg);
+            color: var(--text);
             font-family: Arial, sans-serif;
-            font-size: 1.5em;
+            font-size: clamp(var(--base-min), 2.2vw, var(--base-max));
+            line-height: 1.45;
         }
 
         /* Typography */
         h1 {
-            margin: 10px 0;
-            color: #ffffff;
-            font-size: 2em;
+            margin: 0.5rem 0;
+            color: var(--text);
+            font-size: clamp(26px, 6.5vw, 64px);
             text-align: center;
+            line-height: 1.1;
         }
 
         /* Layout */
         .container {
             display: flex;
             justify-content: space-between;
-            gap: 10px;
+            gap: clamp(5px, 2vw, 15px);
             max-width: none;
             margin: 0;
         }
 
         .direction {
             flex: 1;
-            padding: 0;
-            background-color: #111111;
+            padding: clamp(10px, 2vw, 20px);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 1vw, 12px);
         }
 
         .direction h2 {
             margin: 0;
-            color: #ffffff;
-            font-size: 1.8em;
+            color: var(--text);
+            font-size: clamp(18px, 3.6vw, 34px);
             text-align: center;
+            padding: 0.5rem 0;
         }
 
         /* Tables */
@@ -53,15 +74,17 @@
         }
 
         th, td {
-            padding: 0;
-            border: 1px solid #333333;
-            color: #ffffff;
-            font-size: 1.4em;
+            padding: clamp(8px, 1.6vw, 14px);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: clamp(14px, 2.2vw, 20px);
             text-align: center;
+            word-break: break-word;
         }
 
         th {
-            background-color: #333333;
+            background-color: var(--border);
+            font-weight: bold;
         }
 
         tr:nth-child(even) {
@@ -70,85 +93,86 @@
 
         /* Date/Time Display */
         #current-datetime {
-            margin: 10px 0;
-            color: #ffffff;
-            font-size: 1.2em;
-            font-weight: bold;
+            margin: 0.5rem 0;
+            color: var(--text);
+            font-size: clamp(13px, 1.8vw, 18px);
+            font-weight: 600;
             text-align: center;
         }
 
         /* Error Messages */
         .error {
-            margin: 10px 0;
-            color: #ff0000;
-            font-size: 1.6em;
+            margin: 0.5rem 0;
+            color: #ff4d4d;
+            font-size: clamp(14px, 2.5vw, 20px);
             text-align: center;
+            font-weight: 700;
         }
 
         /* Bottom Info */
         .bottom-info {
-            margin: 20px 0 10px 0;
-            color: #888888;
-            font-size: 1em;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--muted);
+            font-size: clamp(12px, 1.5vw, 14px);
             text-align: center;
         }
 
         #refresh-countdown {
-            margin: 5px 0 20px 0;
-            color: #888888;
-            font-size: 0.9em;
+            margin: 0.25rem 0 1rem 0;
+            color: var(--muted);
+            font-size: clamp(12px, 1.5vw, 14px);
             text-align: center;
         }
 
         /* Weather Section */
         .weather-section {
-            margin: 20px 0;
-            padding: 20px;
-            background-color: #111111;
-            border: 1px solid #333333;
+            margin: 1rem 0;
+            padding: clamp(10px, 3vw, 20px);
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border);
         }
 
         .weather-section h2 {
-            margin: 0 0 15px 0;
+            margin: 0 0 1rem 0;
             color: #ffffff;
-            font-size: 1.8em;
+            font-size: clamp(18px, 4vw, 40px);
             text-align: center;
         }
 
         .weather-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: clamp(10px, 2vw, 20px);
             justify-content: center;
         }
 
         .weather-card {
             flex: 1;
-            min-width: 200px;
-            max-width: 300px;
-            padding: 15px;
-            background-color: #222222;
-            border: 1px solid #333333;
+            min-width: clamp(150px, 40vw, 300px);
+            max-width: 100%;
+            padding: clamp(10px, 2vw, 20px);
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
         }
 
         .weather-card h3 {
-            margin: 0 0 10px 0;
+            margin: 0 0 0.5rem 0;
             color: #ffffff;
-            font-size: 1.3em;
+            font-size: clamp(14px, 2.5vw, 22px);
             text-align: center;
         }
 
         .weather-card p {
-            margin: 8px 0;
-            color: #ffffff;
-            font-size: 1.1em;
+            margin: 0.5rem 0;
+            color: var(--text);
+            font-size: clamp(14px, 2vw, 18px);
         }
 
         .weather-info-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
+            gap: clamp(10px, 2vw, 20px);
         }
 
         .weather-info-text {
@@ -156,9 +180,10 @@
         }
 
         .weather-icon-display {
-            font-size: 4em;
+            font-size: clamp(48px, 12vw, 80px);
             line-height: 1;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .current-weather {
@@ -166,30 +191,66 @@
             border: 2px solid #444444;
         }
 
-        /* Media Queries */
-        @media (max-width: 768px) {
+        /* Train Section - match weather section visuals */
+        .train-section {
+            margin: 1rem 0;
+            padding: clamp(10px, 3vw, 20px);
+            background-color: #111111;
+            border: 1px solid #333333;
+        }
+
+        .train-section h1 {
+            margin: 0 0 1rem 0;
+            color: #ffffff;
+            font-size: clamp(24px, 6vw, 56px);
+            text-align: center;
+        }
+
+        .train-section h2 {
+            margin: 0 0 1rem 0;
+            color: #ffffff;
+            font-size: clamp(18px, 4vw, 40px);
+            text-align: center;
+            padding: 0.25rem 0;
+        }
+
+        /* Media Queries - Tablet */
+        @media (max-width: 1024px) {
             body {
-                font-size: 1.6em;
+                padding: 0.75rem;
             }
 
-            h1 {
-                font-size: 2.2em;
+            .container {
+                gap: clamp(5px, 1.5vw, 12px);
+            }
+
+            th, td {
+                padding: clamp(6px, 1vw, 10px);
+            }
+        }
+
+        /* Media Queries - Mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
             }
 
             .container {
                 flex-direction: column;
+                gap: clamp(5px, 1vw, 10px);
             }
 
             .direction h2 {
-                font-size: 2em;
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
             }
 
             th, td {
-                font-size: 1.5em;
+                padding: clamp(8px, 1.5vw, 12px);
             }
 
             .weather-card {
-                max-width: 100%;
+                min-width: 100%;
             }
 
             .weather-info-container {
@@ -197,16 +258,66 @@
                 align-items: center;
             }
 
-            .weather-icon-display {
-                font-size: 3em;
+            .weather-card p {
+                margin: 0.25rem 0;
+            }
+        }
+
+        /* Media Queries - Small Mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 0.25rem;
+            }
+
+            #current-datetime {
+                margin: 0.25rem 0;
+            }
+
+            .direction {
+                padding: clamp(8px, 1.5vw, 12px);
+                margin-bottom: 0.5rem;
+            }
+
+            th, td {
+                padding: clamp(5px, 1vw, 8px);
+            }
+
+            .weather-section {
+                padding: clamp(8px, 2vw, 12px);
+                margin: 0.5rem 0;
+            }
+
+            .weather-card {
+                padding: clamp(8px, 1.5vw, 12px);
+            }
+        }
+
+        /* Large Screen (TV/Desktop) */
+        @media (min-width: 1920px) {
+            body {
+                padding: 1.5rem;
+            }
+
+            .container {
+                gap: 20px;
+            }
+
+            th, td {
+                padding: 12px;
+            }
+
+            .weather-section {
+                padding: 30px;
+                margin: 2rem 0;
             }
         }
     </style>
 </head>
 <body>
     <div id="current-datetime"></div>
-    <h1>杏花邨下一班列車</h1>
-    <div class="container">
+    <div class="train-section">
+        <h1>杏花邨下一班列車</h1>
+        <div class="container">
         <div id="up-direction" class="direction">
             <h2>往柴灣</h2>
             <table>
@@ -234,7 +345,9 @@
             </table>
         </div>
     </div>
-    <div id="error-message" class="error"></div>
+        </div>
+        <div id="error-message" class="error"></div>
+    </div>
 
     <div class="weather-section">
         <h2>天氣資訊</h2>
