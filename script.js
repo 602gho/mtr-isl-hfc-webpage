@@ -137,10 +137,29 @@ async function fetchWeatherData() {
         if (currentData && currentData.temperature && currentData.temperature.data) {
             const tempData = currentData.temperature.data[0];
             const humidityData = currentData.humidity ? currentData.humidity.data[0] : null;
-            const rainfallMax = currentData.rainfall && currentData.rainfall.data 
+            const rainfallMax = currentData.rainfall && currentData.rainfall.data
                 ? Math.max(...currentData.rainfall.data.map(item => item.max || 0))
                 : 0;
-            
+
+            // Determine emoji based on temperature
+            let emoji = '🌤️'; // default
+            const temp = parseFloat(tempData.value);
+            if (temp >= 30) {
+                emoji = '🔥';
+            } else if (temp >= 25) {
+                emoji = '☀️';
+            } else if (temp >= 20) {
+                emoji = '🌤️';
+            } else if (temp >= 15) {
+                emoji = '⛅';
+            } else if (temp >= 10) {
+                emoji = '🌥️';
+            } else {
+                emoji = '❄️';
+            }
+
+            document.getElementById('current-weather-emoji').textContent = emoji;
+
             const tbody = document.getElementById('current-weather-tbody');
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -225,7 +244,7 @@ function updateDateTime() {
     const second = String(now.getSeconds()).padStart(2, '0');
 
     const dateTimeStr = `${year}年${month}月${day}日 ${hour}時${minute}分${second}秒`;
-    document.getElementById('current-datetime').textContent = dateTimeStr;
+    document.getElementById('datetime-text').textContent = dateTimeStr;
 }
 
 function updateRefreshCountdown() {
